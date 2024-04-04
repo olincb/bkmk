@@ -22,6 +22,7 @@ fn main() {
     }
 }
 
+/// List the bookmarks saved in the state file.
 fn list_bookmarks() {
     let state_file = state::load_state_file();
     if state_file.is_empty() {
@@ -34,6 +35,7 @@ fn list_bookmarks() {
     }
 }
 
+/// Add a bookmark with name `new_bookmark`.
 fn create_bookmark(new_bookmark: String) {
     println!("Creating bookmark {new_bookmark}.");
     let directory = env::current_dir()
@@ -52,6 +54,7 @@ fn create_bookmark(new_bookmark: String) {
     state::write_state_file(state_map);
 }
 
+/// Remove the bookmark with name `bookmark` if it exists.
 fn remove_bookmark(bookmark: String) {
     println!("Removing bookmark {bookmark}.");
     let mut state_map = state::load_state_file();
@@ -59,6 +62,7 @@ fn remove_bookmark(bookmark: String) {
     state::write_state_file(state_map);
 }
 
+/// Look up the bookmark with name `bookmark`.
 fn find_bookmark(bookmark: String) {
     let state_map = state::load_state_file();
     let result = state_map.get(&bookmark);
