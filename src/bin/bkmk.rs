@@ -5,16 +5,70 @@ mod state;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        eprintln!("No arguments provided. Use --help for usage information.");
+        process::exit(1);
+    }
     let arg1 = &args[1];
     match arg1.as_str() {
         "--list" | "-l" => {
+            if args.len() > 2 {
+                eprintln!("Too many arguments for --list. Use --help for usage information.");
+                process::exit(3);
+            }
             list_bookmarks();
         }
-        "--remove" | "-r" => {
+        "--remove" | "-r" | "--delete" | "-d" => {
+            if args.len() < 3 {
+                eprintln!("No bookmark provided for {}. Use --help for usage information.", arg1);
+                process::exit(4);
+            }
+            if args.len() > 3 {
+                eprintln!("Too many arguments for {}. Use --help for usage information.", arg1);
+                process::exit(5);
+            }
             remove_bookmark(args[2].to_string());
         }
         "--find" | "-f" => {
+            if args.len() < 3 {
+                eprintln!("No bookmark provided for --find. Use --help for usage information.");
+                process::exit(6);
+            }
+            if args.len() > 3 {
+                eprintln!("Too many arguments for --find. Use --help for usage information.");
+                process::exit(5);
+            }
             find_bookmark(args[2].to_string());
+        }
+        "--help" | "-h" => {
+            println!("Usage: bkmk [OPTION] [BOOKMARK]");
+            println!("A simple command line bookmark manager.");
+            println!();
+            println!("Options:");
+            println!("  -l, --list             List all bookmarks.");
+            println!("  -r, --remove BOOKMARK  Remove the specified bookmark.");
+            println!("  -d, --delete BOOKMARK  Alias for --remove.");
+            println!("  -f, --find BOOKMARK    Find the directory for the specified bookmark.");
+            println!("  -h, --help             Show this help message.");
+            println!();
+            println!("If no option is provided, a new bookmark will be created with the name BOOKMARK.");
+        }
+        "🥚" | "🪺" | "🐰" | "🐇" | "🐣" => {
+            for _ in 0..5 {
+                for i in 0i32..=10 {
+                    let j = (i - 5).abs();
+                    let s = " ".repeat(5-j as usize) + "🐰" + &" ".repeat(j as usize);
+                    print!("\r{}\x07", s);
+                    std::io::Write::flush(&mut std::io::stdout()).unwrap();
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                }
+            }
+            print!("\r😁\x07\n");
+            process::exit(0);
+        }
+        key if key.starts_with("--") => {
+            eprintln!("Unknown option: {key}. Use --help for usage information.");
+            process::exit(2);
         }
         key => {
             create_bookmark(key.to_string());
